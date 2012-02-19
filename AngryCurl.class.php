@@ -3,7 +3,7 @@
  * AngryCurl - Anonymized Rolling Curl class
  *
  * @author Nedzelsky Alexander <to.naive@gmail.com>
- * @version 0.1
+ * @version 0.2
  *
  * @uses RollingCurl
  * @uses cURL
