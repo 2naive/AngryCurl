@@ -1,4 +1,5 @@
 <?php
+
 /**
  * AngryCurl - Anonymized Rolling Curl class
  *
@@ -13,6 +14,8 @@
  * @var array   $array_proxy        -   proxy list
  * @var array   $array_url          -   url list to parse
  * @var array   $array_useragent    -   useragents to change
+ * @var bool    $use_proxy_list     -
+ * @var bool    $use_useragent_list -   
  * @var int     $n_proxy            -   proxies amount
  * @var int     $n_useragent        -   useragents amount
  * @var int     $n_url              -   urls amount
@@ -26,6 +29,9 @@ class AngryCurl extends RollingCurl {
     protected $array_proxy          =   array();
     protected $array_url            =   array();
     protected $array_useragent      =   array();
+    
+    protected $use_proxy_list       =   false;
+    protected $use_useragent_list   =   false;
     
     protected $n_proxy              =   0;
     protected $n_useragent          =   0;
@@ -41,6 +47,66 @@ class AngryCurl extends RollingCurl {
         # writing debug
         $this->add_debug_msg("# Building");
         parent::__construct($callback);
+    }
+
+    /**
+     * Request execution overload
+     *
+     * @access public
+     * 
+     * @var string $url Request URL
+     * @var enum(GET/POST) $method
+     * @var array $post_data
+     * @var array $headers
+     * @var array $options
+     * 
+     * @return bool
+     */
+    public function request($url, $method = "GET", $post_data = null, $headers = null, $options = null) {
+        
+        if($this->n_proxy > 0 && $this->use_proxy_list)
+        {
+            $options[CURLOPT_PROXY]=$this->array_proxy[ rand(0, $this->n_proxy-1) ];
+        //    $this->add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
+        }
+        if($this->n_useragent > 0 && $this->use_useragent_list)
+        {
+            $options[CURLOPT_USERAGENT]=$this->array_useragent[ rand(0, $this->n_useragent-1) ];
+        //    $this->add_debug_msg("Using USERAGENT: ".$options[CURLOPT_USERAGENT]);
+        }
+        
+        parent::request($url, $method, $post_data, $headers, $options);
+        return true;
+    }
+    
+    /**
+     * Useragent list loading method
+     *
+     * @access public
+     * 
+     * @var string/array $input Input proxy data, could be an array or filename
+     * @return bool
+     */
+    public function load_useragent_list($input)
+    {
+        # writing debug
+        $this->add_debug_msg("# Start loading useragent list");
+        
+        # defining proxiess
+        if(is_array($input))
+        {
+            $this->array_useragent = $input;
+        }else
+        {        
+            $this->array_useragent = $this->load_from_file($input);
+        }
+        
+        # setting amount
+        $this->n_useragent = count($this->array_useragent);
+        
+        # writing debug
+        if($this->n_useragent > 0)
+            $this->add_debug_msg("# Loaded useragents: {$this->n_useragent}");
     }
 
     /**
@@ -125,6 +191,7 @@ class AngryCurl extends RollingCurl {
             self::$debug_info[] = "->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url'];
             self::$array_alive_proxy[] = $request->options[CURLOPT_PROXY];
     }
+    
     /**
      * Filtering proxy array, choosing alive proxy only
      *
@@ -179,6 +246,7 @@ class AngryCurl extends RollingCurl {
         
         if(!$fp)
         {
+            $this->add_debug_msg("# Failed to open file: $filename");
             return array();
         }
         
@@ -186,7 +254,10 @@ class AngryCurl extends RollingCurl {
         fclose($fp);
         
         if(strlen($data)<1)
+        {
+            $this->add_debug_msg("# Empty file: $filename");
             return array();
+        }
         
         $array = explode($delim, $data);
         
@@ -200,8 +271,12 @@ class AngryCurl extends RollingCurl {
             return $array;
         }
         else
+        {
+            $this->add_debug_msg("# Empty data array in file: $filename");
             return array();
+        }
     }
+    
     /**
      * Printing debug information method
      *
@@ -214,6 +289,7 @@ class AngryCurl extends RollingCurl {
         echo htmlspecialchars( implode("\n", self::$debug_info) );
         echo "</pre>";
     }
+    
     /**
      * Logging method
      *
