@@ -52,7 +52,7 @@ class AngryCurl extends RollingCurl {
     function __construct($callback = null)
     {
         # writing debug
-        $this->add_debug_msg("# Building");
+        self::add_debug_msg("# Building");
         parent::__construct($callback);
     }
 
@@ -93,12 +93,12 @@ class AngryCurl extends RollingCurl {
         if($this->n_proxy > 0 && $this->use_proxy_list)
         {
             $options[CURLOPT_PROXY]=$this->array_proxy[ rand(0, $this->n_proxy-1) ];
-        //    $this->add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
+        //    self::add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
         }
         if($this->n_useragent > 0 && $this->use_useragent_list)
         {
             $options[CURLOPT_USERAGENT]=$this->array_useragent[ rand(0, $this->n_useragent-1) ];
-        //    $this->add_debug_msg("Using USERAGENT: ".$options[CURLOPT_USERAGENT]);
+        //    self::add_debug_msg("Using USERAGENT: ".$options[CURLOPT_USERAGENT]);
         }
         
         parent::request($url, $method, $post_data, $headers, $options);
@@ -116,7 +116,7 @@ class AngryCurl extends RollingCurl {
     public function load_useragent_list($input)
     {
         # writing debug
-        $this->add_debug_msg("# Start loading useragent list");
+        self::add_debug_msg("# Start loading useragent list");
         
         # defining proxiess
         if(is_array($input))
@@ -132,7 +132,7 @@ class AngryCurl extends RollingCurl {
         
         # writing debug
         if($this->n_useragent > 0)
-            $this->add_debug_msg("# Loaded useragents: {$this->n_useragent}");
+            self::add_debug_msg("# Loaded useragents: {$this->n_useragent}");
     }
 
     /**
@@ -150,7 +150,7 @@ class AngryCurl extends RollingCurl {
     public function load_proxy_list($input, $proxy_type = 'http', $proxy_test_url = 'http://google.com', $proxy_valid_regexp = null)
     {
         # writing debug
-        $this->add_debug_msg("# Start loading proxies");
+        self::add_debug_msg("# Start loading proxies");
         
         # defining proxiess
         if(is_array($input))
@@ -167,10 +167,10 @@ class AngryCurl extends RollingCurl {
         # setting proxy type
         if($proxy_type == 'socks5')
         {
-            $this->add_debug_msg("Proxy type: SOCKS5");
+            self::add_debug_msg("Proxy type: SOCKS5");
             $this->__set('options', array(CURLOPT_PROXYTYPE => CURLPROXY_SOCKS5));
         }else
-            $this->add_debug_msg("Proxy type: HTTP");
+            self::add_debug_msg("Proxy type: HTTP");
         
         # setting url for testing proxies
         $this->proxy_test_url = $proxy_test_url;
@@ -179,19 +179,19 @@ class AngryCurl extends RollingCurl {
         if( !empty($proxy_valid_regexp) )
         {
             self::$proxy_valid_regexp = $proxy_valid_regexp;
-            $this->add_debug_msg("Proxy test RegExp: ".self::$proxy_valid_regexp);
+            self::add_debug_msg("Proxy test RegExp: ".self::$proxy_valid_regexp);
         }
         
         # writing debug
-        $this->add_debug_msg("Proxy test URL: {$this->proxy_test_url}");
-        $this->add_debug_msg("Loaded proxies: {$this->n_proxy}");
+        self::add_debug_msg("Proxy test URL: {$this->proxy_test_url}");
+        self::add_debug_msg("Loaded proxies: {$this->n_proxy}");
 
         
         # filtering alive proxies
         if($this->n_proxy>0)
             $this->filter_alive_proxy();
         else
-            $this->add_debug_msg("# Testing proxies aborted");        
+            self::add_debug_msg("# Testing proxies aborted");        
 
         
     }
@@ -209,9 +209,9 @@ class AngryCurl extends RollingCurl {
             return;
         }
 
-        if(!empty(AngryCurl::$proxy_valid_regexp) && !@preg_match('#'.AngryCurl::$proxy_valid_regexp.'#', $response) )
+        if(!empty(self::$proxy_valid_regexp) && !@preg_match('#'.self::$proxy_valid_regexp.'#', $response) )
         {
-            self::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\tRegExp match:\t".AngryCurl::$proxy_valid_regexp."\t".$info['url']);
+            self::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\tRegExp match:\t".self::$proxy_valid_regexp."\t".$info['url']);
             return;
         }
             self::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
@@ -226,7 +226,7 @@ class AngryCurl extends RollingCurl {
     protected function filter_alive_proxy()
     {
         # writing debug
-        $this->add_debug_msg("# Start testing proxies");
+        self::add_debug_msg("# Start testing proxies");
         
         $buff_callback_func = $this->__get('callback');
         $this->__set('callback',array('AngryCurl', 'callback_proxy_check'));
@@ -238,7 +238,7 @@ class AngryCurl extends RollingCurl {
         }
 
         # run
-        $this->add_debug_msg("# Running proxy test connections");
+        self::add_debug_msg("# Running proxy test connections");
         
         $time_start = microtime(1);
         $this->execute();
@@ -248,14 +248,14 @@ class AngryCurl extends RollingCurl {
         $this->__set('requests', array());
 
         # writing debug
-        $this->add_debug_msg("Alive proxies: ".count(self::$array_alive_proxy)."/".$this->n_proxy);
+        self::add_debug_msg("Alive proxies: ".count(self::$array_alive_proxy)."/".$this->n_proxy);
         
         # updating params
         $this->n_proxy = count(self::$array_alive_proxy);
         $this->array_proxy = self::$array_alive_proxy;
         $this->__set('callback', $buff_callback_func);
         
-        $this->add_debug_msg("# Testing proxies finished in ".round($time_end-$time_start,2)."s");
+        self::add_debug_msg("# Testing proxies finished in ".round($time_end-$time_start,2)."s");
     }
 
     /**
@@ -272,7 +272,7 @@ class AngryCurl extends RollingCurl {
         
         if(!$fp)
         {
-            $this->add_debug_msg("# Failed to open file: $filename");
+            self::add_debug_msg("# Failed to open file: $filename");
             return array();
         }
         
@@ -281,7 +281,7 @@ class AngryCurl extends RollingCurl {
         
         if(strlen($data)<1)
         {
-            $this->add_debug_msg("# Empty file: $filename");
+            self::add_debug_msg("# Empty file: $filename");
             return array();
         }
         
@@ -298,7 +298,7 @@ class AngryCurl extends RollingCurl {
         }
         else
         {
-            $this->add_debug_msg("# Empty data array in file: $filename");
+            self::add_debug_msg("# Empty data array in file: $filename");
             return array();
         }
     }
