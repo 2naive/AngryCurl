@@ -10,16 +10,17 @@ function nothing($response, $info, $request)
 {
     if($info['http_code']!==200)
     {
-        AngryCurl::$debug_info[] = "->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url'];
+        AngryCurl::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
         return;
     }else
     {
-        AngryCurl::$debug_info[] = "->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url'];
+        AngryCurl::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
         return;
     }
     echo "nothing happens!\n";
 }
 $AC = new AngryCurl('nothing');
+$AC->init_console();
 $AC->__set('window_size', 10);
 
 $AC->load_proxy_list('./lib/proxy_list.txt','http','http://google.com','title>G[o]{2}gle');
@@ -32,6 +33,7 @@ $AC->get('http://ya.ru');
 $AC->get('http://ya.ru');
 $AC->get('http://ya.ru');
 $AC->execute();
-AngryCurl::print_debug();
+
+//AngryCurl::print_debug(); // if console_mode is off
 
 unset($AC);

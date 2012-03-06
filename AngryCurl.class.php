@@ -35,7 +35,7 @@ class AngryCurl extends RollingCurl {
     
     protected $use_proxy_list       =   false;
     protected $use_useragent_list   =   false;
-    protected $console_mode         =   true; // not implemented yet
+    protected static $console_mode  =   false;
     
     protected $error_limit          =   0; // not implemented yet
     protected $array_valid_http_code=   array(200); // not implemented yet
@@ -54,6 +54,25 @@ class AngryCurl extends RollingCurl {
         # writing debug
         $this->add_debug_msg("# Building");
         parent::__construct($callback);
+    }
+
+    /**
+     * Initializing console mode
+     *
+     * @return voide
+     */
+    public function init_console()
+    {
+        self::$console_mode = true;
+        
+        echo "<pre>";
+        
+        @apache_setenv('no-gzip', 1);
+        @ini_set('zlib.output_compression', 0);
+        @ini_set('implicit_flush', 1);
+        for ($i = 0; $i < ob_get_level(); $i++)
+            ob_end_flush();
+        ob_implicit_flush(1);
     }
 
     /**
@@ -186,16 +205,16 @@ class AngryCurl extends RollingCurl {
     {
         if($info['http_code']!==200)
         {
-            self::$debug_info[] = "->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url'];
+            self::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
             return;
         }
 
         if(!empty(AngryCurl::$proxy_valid_regexp) && !@preg_match('#'.AngryCurl::$proxy_valid_regexp.'#', $response) )
         {
-            self::$debug_info[] = "->\t".$request->options[CURLOPT_PROXY]."\tFAILED\tRegExp match:\t".AngryCurl::$proxy_valid_regexp."\t".$info['url'];
+            self::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\tRegExp match:\t".AngryCurl::$proxy_valid_regexp."\t".$info['url']);
             return;
         }
-            self::$debug_info[] = "->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url'];
+            self::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
             self::$array_alive_proxy[] = $request->options[CURLOPT_PROXY];
     }
     
@@ -300,13 +319,18 @@ class AngryCurl extends RollingCurl {
     /**
      * Logging method
      *
-     * @access protected
+     * @access public
      * @var string $msg message
      * @return void
      */
-    protected static function add_debug_msg($msg)
+    public static function add_debug_msg($msg)
     {
         self::$debug_info[] = $msg;
+
+        if(self::$console_mode)
+        {
+            echo $msg."\r\n";
+        }
     }
 
     function __destruct() {
