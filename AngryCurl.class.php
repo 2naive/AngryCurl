@@ -73,6 +73,9 @@ class AngryCurl extends RollingCurl {
         for ($i = 0; $i < ob_get_level(); $i++)
             ob_end_flush();
         ob_implicit_flush(1);
+        
+        # writing debug
+        self::add_debug_msg("# Console mode activated");
     }
 
     /**

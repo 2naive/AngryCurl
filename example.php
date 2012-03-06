@@ -21,7 +21,7 @@ function nothing($response, $info, $request)
 }
 $AC = new AngryCurl('nothing');
 $AC->init_console();
-$AC->__set('window_size', 10);
+$AC->__set('window_size', 200);
 
 $AC->load_proxy_list('./lib/proxy_list.txt','http','http://google.com','title>G[o]{2}gle');
 $AC->load_useragent_list('./lib/useragent_list.txt');
