@@ -329,7 +329,7 @@ class AngryCurl extends RollingCurl {
 
         if(self::$console_mode)
         {
-            echo $msg."\r\n";
+            echo htmlspecialchars($msg)."\r\n";
         }
     }
 
