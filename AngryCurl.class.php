@@ -15,7 +15,10 @@
  * @var array   $array_url          -   url list to parse
  * @var array   $array_useragent    -   useragents to change
  * @var bool    $use_proxy_list     -
- * @var bool    $use_useragent_list -   
+ * @var bool    $use_useragent_list -
+ * @var bool    $console_mode       -   Enable/disable autoupdated echo using JS // not implemented yet
+ * @var bool    $error_limit        -   Limit of invalid http responses before die, 0 - unlimited // not implemented yet
+ * @var bool    $array_valid_http_code- Array of valid http response codes, default  // not implemented yet
  * @var int     $n_proxy            -   proxies amount
  * @var int     $n_useragent        -   useragents amount
  * @var int     $n_url              -   urls amount
@@ -32,6 +35,10 @@ class AngryCurl extends RollingCurl {
     
     protected $use_proxy_list       =   false;
     protected $use_useragent_list   =   false;
+    protected $console_mode         =   true; // not implemented yet
+    
+    protected $error_limit          =   0; // not implemented yet
+    protected $array_valid_http_code=   array(200); // not implemented yet
     
     protected $n_proxy              =   0;
     protected $n_useragent          =   0;
