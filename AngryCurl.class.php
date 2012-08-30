@@ -6,6 +6,8 @@
  * @author Nedzelsky Alexander <to.naive@gmail.com>
  * @version 0.2
  *
+ * @todo chains of requests
+ * 
  * @uses RollingCurl
  * @uses cURL
  * 
@@ -83,11 +85,11 @@ class AngryCurl extends RollingCurl {
      *
      * @access public
      * 
-     * @var string $url Request URL
-     * @var enum(GET/POST) $method
-     * @var array $post_data
-     * @var array $headers
-     * @var array $options
+     * @param string $url Request URL
+     * @param enum(GET/POST) $method
+     * @param array $post_data
+     * @param array $headers
+     * @param array $options
      * 
      * @return bool
      */
@@ -95,7 +97,7 @@ class AngryCurl extends RollingCurl {
         
         if($this->n_proxy > 0 && $this->use_proxy_list)
         {
-            $options[CURLOPT_PROXY]=$this->array_proxy[ rand(0, $this->n_proxy-1) ];
+            $options[CURLOPT_PROXY]=$this->array_proxy[ mt_rand(0, $this->n_proxy-1) ];
         //    self::add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
         }
         if($this->n_useragent > 0 && $this->use_useragent_list)
@@ -113,7 +115,7 @@ class AngryCurl extends RollingCurl {
      *
      * @access public
      * 
-     * @var string/array $input Input proxy data, could be an array or filename
+     * @param string/array $input Input proxy data, could be an array or filename
      * @return bool
      */
     public function load_useragent_list($input)
@@ -143,10 +145,10 @@ class AngryCurl extends RollingCurl {
      *
      * @access public
      * 
-     * @var string/array $input Input proxy data, could be an array or filename
-     * @var enum(http/socks5) $proxy_type
-     * @var string $proxy_test_url URL needed for proxy test requests
-     * @var regexp $proxy_valid_regexp Regexp needed to be shure that response hasn`t been modified by proxy
+     * @param string/array $input Input proxy data, could be an array or filename
+     * @param enum(http/socks5) $proxy_type
+     * @param string $proxy_test_url URL needed for proxy test requests
+     * @param regexp $proxy_valid_regexp Regexp needed to be shure that response hasn`t been modified by proxy
      * 
      * @return bool
      */
@@ -162,6 +164,13 @@ class AngryCurl extends RollingCurl {
         }else
         {        
             $this->array_proxy = $this->load_from_file($input);
+            # removing duplicates
+            $n_dup = count($this->array_proxy);
+            $this->array_proxy = array_unique($this->array_proxy);
+            $n_dup -= count($this->array_proxy);
+            
+            self::add_debug_msg("Removed duplicates: {$n_dup}");
+            unset($n_dup);
         }
         
         # setting amount
@@ -326,7 +335,7 @@ class AngryCurl extends RollingCurl {
      * Logging method
      *
      * @access public
-     * @var string $msg message
+     * @param string $msg message
      * @return void
      */
     public static function add_debug_msg($msg)
