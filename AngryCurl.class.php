@@ -4,7 +4,7 @@
  * AngryCurl - Anonymized Rolling Curl class
  *
  * @author Nedzelsky Alexander <to.naive@gmail.com>
- * @version 0.2
+ * @version 0.3
  *
  * @todo chains of requests
  * @todo stop on error_limit exceed
@@ -13,13 +13,14 @@
  * @uses cURL
  * 
  * @var array   $debug_info         -   debug information
+ * @var bool    $debug_log          -   Enable/disable debug log
+ * @var bool    $console_mode       -   Enable/disable loggin information direct to 'user's browser on a fly'
  * @var array   $array_alive_proxy  -   alive proxy array needed to transfer data from proxy filtering function in its callback
  * @var array   $array_proxy        -   proxy list
  * @var array   $array_url          -   url list to parse
  * @var array   $array_useragent    -   useragents to change
  * @var bool    $use_proxy_list     -
  * @var bool    $use_useragent_list -
- * @var bool    $console_mode       -   Enable/disable autoupdated echo using JS // not implemented yet
  * @var bool    $error_limit        -   Limit of invalid http responses before die, 0 - unlimited // not implemented yet
  * @var bool    $array_valid_http_code- Array of valid http response codes, default  // not implemented yet
  * @var int     $n_proxy            -   proxies amount
@@ -30,7 +31,10 @@
  */
 class AngryCurl extends RollingCurl {
     public static $debug_info       =   array();
-
+    public static $debug_log        =   false;
+    protected static $console_mode  =   false;
+    
+    
     protected static $array_alive_proxy=array();
     protected $array_proxy          =   array();
     protected $array_url            =   array();
@@ -38,8 +42,7 @@ class AngryCurl extends RollingCurl {
     
     protected $use_proxy_list       =   false;
     protected $use_useragent_list   =   false;
-    protected static $console_mode  =   false;
-    
+   
     protected $error_limit          =   0; // not implemented yet
     protected $array_valid_http_code=   array(200); // not implemented yet
     
@@ -50,10 +53,18 @@ class AngryCurl extends RollingCurl {
     protected $proxy_test_url       =   'http://google.com';
     protected static $proxy_valid_regexp   =   '';
     
-    //protected $curl_options         =   array();
-
-    function __construct($callback = null)
+    /**
+     * AngryCurl constructor
+     *
+     * @param string $callback Callback function name
+     * @param bool $debug_log Enable/disable writing log to $debug_info var (false by default to reduce memory consumption)
+     * 
+     * @return void
+     */
+    function __construct($callback = null, $debug_log = false)
     {
+        self::$debug_log = $debug_log;
+        
         # writing debug
         self::add_debug_msg("# Building");
         
@@ -70,7 +81,7 @@ class AngryCurl extends RollingCurl {
     /**
      * Initializing console mode
      *
-     * @return voide
+     * @return void
      */
     public function init_console()
     {
@@ -383,14 +394,22 @@ class AngryCurl extends RollingCurl {
      */
     public static function add_debug_msg($msg)
     {
-        self::$debug_info[] = $msg;
-
+        if(self::$debug_log)
+        {
+            self::$debug_info[] = $msg;
+        }
+        
         if(self::$console_mode)
         {
             echo htmlspecialchars($msg)."\r\n";
         }
     }
 
+    /**
+     * AngryCurl destructor
+     * 
+     * @return void
+     */
     function __destruct()
     {
         self::add_debug_msg("# Finishing ...");

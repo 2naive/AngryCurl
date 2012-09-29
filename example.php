@@ -6,19 +6,6 @@ ini_set('memory_limit', '128M');
 require("RollingCurl.class.php");
 require("AngryCurl.class.php");
 
-function nothing($response, $info, $request)
-{
-    if($info['http_code']!==200)
-    {
-        AngryCurl::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
-        return;
-    }else
-    {
-        AngryCurl::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
-        return;
-    }
-    echo "nothing happens!\n";
-}
 $AC = new AngryCurl('nothing');
 $AC->init_console();
 $AC->__set('window_size', 200);
@@ -37,3 +24,17 @@ $AC->execute();
 //AngryCurl::print_debug(); // if console_mode is off
 
 unset($AC);
+
+function nothing($response, $info, $request)
+{
+    if($info['http_code']!==200)
+    {
+        AngryCurl::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
+        return;
+    }else
+    {
+        AngryCurl::add_debug_msg("->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
+        return;
+    }
+    echo "nothing happens!\n";
+}
