@@ -98,6 +98,7 @@ http://code.google.com/p/rolling-curl/source/browse/trunk/
 ## TODO
 * chains of requests
 * stop on error_limit exceed
+* better documentation and examples
 
 ## Credits
 You may join this class discussion here:
