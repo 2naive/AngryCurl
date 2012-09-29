@@ -23,6 +23,7 @@
 * checking if proxy given response content is correct
 * loading useragent-list from file or array
 * changing proxy/useragent "on the fly"
+* preventing direct connections without any proxy/useragent if such options are set
 * multi-thread connections
 * callback functions
 * web-console mode
@@ -93,6 +94,10 @@ $AC->add($request);
 Because this class is kind of extension of RollingCurl class you may use any constructions RollingCurl has.
 For other information read here:
 http://code.google.com/p/rolling-curl/source/browse/trunk/
+
+## TODO
+* chains of requests
+* stop on error_limit exceed
 
 ## Credits
 You may join this class discussion here:
