@@ -36,6 +36,7 @@
 * safe_mode Off
 * open_basedir is NOT set
 * PHP cURL installed
+* gzip Off
 
 ### Basic usage
 
