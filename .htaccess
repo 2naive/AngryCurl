@@ -1,0 +1,4 @@
+<IfModule mod_env.c>
+    SetEnv no-gzip dont-vary
+    RemoveOutputFilter php
+</IfModule>

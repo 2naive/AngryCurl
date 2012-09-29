@@ -69,7 +69,11 @@ class AngryCurl extends RollingCurl {
         
         echo "<pre>";
         
-        @apache_setenv('no-gzip', 1);
+        # Internal Server Error fix in case no apache_setenv() function exists
+        if (function_exists('apache_setenv'))
+        {
+            @apache_setenv('no-gzip', 1);
+        }
         @ini_set('zlib.output_compression', 0);
         @ini_set('implicit_flush', 1);
         for ($i = 0; $i < ob_get_level(); $i++)
