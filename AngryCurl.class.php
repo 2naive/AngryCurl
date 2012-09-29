@@ -125,6 +125,27 @@ class AngryCurl extends RollingCurl {
     }
     
     /**
+     * Starting connections function execution overload
+     *
+     * @access public
+     * 
+     * @return void
+     */
+    public function execute()
+    {
+        # writing debug
+        self::add_debug_msg(" * Threads set to:\t{$this->window_size}");
+        self::add_debug_msg(" * Starting connections");
+        
+        $time_start = microtime(1);
+        parent::execute();
+        $time_end = microtime(1);
+        
+        # writing debug
+        self::add_debug_msg(" * Finished in ".round($time_end-$time_start,2)."s");
+    }
+    
+    /**
      * Useragent list loading method
      *
      * @access public
