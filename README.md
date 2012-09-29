@@ -30,6 +30,13 @@
 
 ## Documentation
 
+### Preferred environment configuration
+
+* PHP as Apache module
+* safe_mode Off
+* open_basedir is NOT set
+* PHP cURL installed
+
 ### Basic usage
 
 ```php
@@ -62,6 +69,7 @@ while(/* */)
     $url = /**/;
     // adding URL to queue
     $AC->get($url);
+    // you may also use $AC->post($url); shortcut as well
 }
 
 // starting connections
@@ -85,7 +93,7 @@ Because this class is kind of extension of RollingCurl class you may use any con
 For other information read here:
 http://code.google.com/p/rolling-curl/source/browse/trunk/
 
-### Credits
+## Credits
 You may join this class discussion here:
 http://stupid.su/php-curl_multi/
 Any questions, change requests and other things you may send to my email written in class comments.
