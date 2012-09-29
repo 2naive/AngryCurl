@@ -56,6 +56,14 @@ class AngryCurl extends RollingCurl {
     {
         # writing debug
         self::add_debug_msg("# Building");
+        
+        # checking if cURL enabled
+        if(!function_exists('curl_init'))
+        {
+            self::add_debug_msg("(!) cURL is not enabled");
+            exit("(!) cURL is not enabled");
+        }
+        
         parent::__construct($callback);
     }
 
@@ -289,21 +297,16 @@ class AngryCurl extends RollingCurl {
         # adding requests to stack
         foreach($this->array_proxy as $id => $proxy)
         {
-                $this->request($this->proxy_test_url, $method = "GET", null, null, array(CURLOPT_PROXY => $proxy) );
+            $this->request($this->proxy_test_url, $method = "GET", null, null, array(CURLOPT_PROXY => $proxy) );
         }
 
         # run
-        self::add_debug_msg(" * Running proxy test connections");
-        
-        $time_start = microtime(1);
         $this->execute();
-        $time_end = microtime(1);
         
         #flushing requests
         $this->__set('requests', array());
 
         # writing debug
-        self::add_debug_msg(" * Testing proxies finished in ".round($time_end-$time_start,2)."s");
         self::add_debug_msg("# Alive proxies:\t".count(self::$array_alive_proxy)."/".$this->n_proxy);
         
         # updating params
