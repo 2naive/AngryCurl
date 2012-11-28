@@ -55,17 +55,22 @@ function my_callback($response, $info, $request)
 $AC = new AngryCurl('my_callback');
 // initializing console-style output
 $AC->init_console();
-// setting amount of threads
-$AC->__set('window_size', 200);
 
-// loading/testing/filtering proxy list (filename, type, test link, test content regexp)
-$AC->load_proxy_list('./lib/proxy_list.txt','http','http://google.com','title>G[o]{2}gle');
-// loading useragent list
-$AC->load_useragent_list('./lib/useragent_list.txt');
 
-// telling that we are going to use proxy and useragent lists to AC
-$AC->__set('use_proxy_list',true);
-$AC->__set('use_useragent_list',true);
+// Importing proxy and useragent lists, setting regexp, proxy type and target url for proxy check
+// You may import proxy from an array as simple as $AC->load_proxy_list($proxy array);
+$AC->load_proxy_list(
+    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
+    // optional: number of threads
+    200,
+    // optional: proxy type
+    'http',
+    // optional: target url to check
+    'http://google.com',
+    // optional: target regexp to check
+    'title>G[o]{2}gle'
+);
+$AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
 
 while(/* */)
 {
@@ -75,19 +80,20 @@ while(/* */)
     // you may also use $AC->post($url); shortcut as well
 }
 
-// starting connections
-$AC->execute();
+// setting amount of threads and starting connections
+$AC->execute(200);
 
-//AngryCurl::print_debug(); // if console_mode is off
+// if console_mode is off
+//AngryCurl::print_debug(); 
 
 unset($AC);
 ```
 
 ### cURL options
 
-You may also pass options for each url before adding to queue like here:
+You may also pass cURL options for each url before adding to queue like here:
 ```php
-$request = new RollingCurlRequest($url);
+$request = new AngryCurlRequest($url);
 $request->options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
 $AC->add($request);
 ```
