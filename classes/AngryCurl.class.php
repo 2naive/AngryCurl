@@ -71,8 +71,7 @@ class AngryCurl extends RollingCurl {
         # checking if cURL enabled
         if(!function_exists('curl_init'))
         {
-            self::add_debug_msg("(!) cURL is not enabled");
-            exit("(!) cURL is not enabled");
+            throw new AngryCurlException("(!) cURL is not enabled");
         }
         
         parent::__construct($callback);
@@ -126,8 +125,7 @@ class AngryCurl extends RollingCurl {
         }
         elseif($this->n_proxy < 1 && $this->use_proxy_list)
         {
-            self::add_debug_msg("(!) Option 'use_proxy_list' is set, but no alive proxy available");
-            exit();
+            throw new AngryCurlException("(!) Option 'use_proxy_list' is set, but no alive proxy available");
         }
         
         if($this->n_useragent > 0 && $this->use_useragent_list)
@@ -137,8 +135,7 @@ class AngryCurl extends RollingCurl {
         }
         elseif($this->n_useragent < 1 && $this->use_useragent_list)
         {
-            self::add_debug_msg("(!) Option 'use_useragent_list' is set, but no useragents available");
-            exit();
+            throw new AngryCurlException("(!) Option 'use_useragent_list' is set, but no useragents available");
         }
 
         parent::request($url, $method, $post_data, $headers, $options);
@@ -167,9 +164,7 @@ class AngryCurl extends RollingCurl {
         }
         else
         {
-            $exception_msg = " (!) Wrong threads amount in execute():\t$window_size";
-            self::add_debug_msg($exception_msg);
-            throw new AngryCurlException($exception_msg);
+            throw new AngryCurlException(" (!) Wrong threads amount in execute():\t$window_size");
         }
         
         # writing debug
@@ -261,9 +256,7 @@ class AngryCurl extends RollingCurl {
         # checking $window_size var
         if( intval($window_size) < 1 || !is_int($window_size) )
         {
-            $exception_msg = " (!) Wrong threads amount in load_proxy_list():\t$window_size";
-            self::add_debug_msg($exception_msg);
-            throw new AngryCurlException($exception_msg);
+            throw new AngryCurlException(" (!) Wrong threads amount in load_proxy_list():\t$window_size");
         }
 
         
@@ -361,9 +354,7 @@ class AngryCurl extends RollingCurl {
         # checking $window_size var
         if( intval($window_size) < 1 || !is_int($window_size) )
         {
-            $exception_msg = " (!) Wrong threads amount in filter_alive_proxy():\t$window_size";
-            self::add_debug_msg($exception_msg);
-            throw new AngryCurlException($exception_msg);
+            throw new AngryCurlException(" (!) Wrong threads amount in filter_alive_proxy():\t$window_size");
         }
         
         $buff_callback_func = $this->__get('callback');
@@ -484,7 +475,13 @@ class AngryCurl extends RollingCurl {
 /**
  * AngryCurl custom exception
  */
-class AngryCurlException extends Exception {
+class AngryCurlException extends Exception
+{
+    public function __construct($message = "", $code = 0 /*For PHP < 5.3 compatibility omitted: , Exception $previous = null*/)
+    {
+        AngryCurl::add_debug_msg($message);
+        parent::__construct($message, $code);
+    }
 }
 
 ?>
