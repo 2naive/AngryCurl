@@ -5,8 +5,8 @@ ini_set('max_execution_time',0);
 ini_set('memory_limit', '128M');
 
 # Including classes
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
+require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
+require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
 
 # Initializing AngryCurl instance with callback function named 'callback_function'
 $AC = new AngryCurl('callback_function');
@@ -14,29 +14,51 @@ $AC = new AngryCurl('callback_function');
 # Initializing so called 'web-console mode' with direct cosnole-like output
 $AC->init_console();
 
-# Setting amount of threads
-$AC->__set('window_size', 200);
-
 # Importing proxy and useragent lists, setting regexp, proxy type and target url for proxy check
+# You may import proxy from an array as simple as $AC->load_proxy_list($proxy array);
 $AC->load_proxy_list(
     dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
+    # optional: number of threads
+    200,
+    # optional: proxy type
     'http',
+    # optional: target url to check
     'http://google.com',
+    # optional: target regexp to check
     'title>G[o]{2}gle'
 );
 $AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
 
-# Setting flags
-$AC->__set('use_proxy_list', true);
-$AC->__set('use_useragent_list', true);
+/*
+ * You may use AngryCurlRequest(URL, METHOD, POST_DATA, HEADERS, CURL OPTIONS) to create add new requests
+ * METHOD may be get or post
+ * POST_DATA an array of POST parameters
+ * HEADERS may be any HTTP headers
+ * CURL OPTIONS may be any of supported by CURL
+ *
+ * Properties may be passed to constructer on changed after as in example below
+ */
+$request = new AngryCurlRequest('http://ya.ru');
+$request->options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
+$AC->add($request);
 
-# Basic request usage (for extended - see demo folder)
-$AC->get('http://ya.ru');
-$AC->get('http://ya.ru');
+/*
+ * You may use shorcut get(URL, HEADERS, CURL OPTIONS) to create add new GET requests
+ * HEADERS may be any HTTP headers
+ * CURL OPTIONS may be any of supported by CURL
+ */
 $AC->get('http://ya.ru');
 
-# Starting
-$AC->execute();
+/*
+ * You may use shorcut post(URL, POST_DATA, HEADERS, CURL OPTIONS) to create add new GET requests
+ * POST_DATA an array of POST parameters
+ * HEADERS may be any HTTP headers
+ * CURL OPTIONS may be any of supported by CURL
+ */
+$AC->post('http://ya.ru');
+
+# Starting with number of threads = 200
+$AC->execute(200);
 
 # You may pring debug information, if console_mode is NOT on ( $AC->init_console(); )
 //AngryCurl::print_debug(); 

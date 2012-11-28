@@ -4,7 +4,7 @@
  * AngryCurl - Anonymized Rolling Curl class
  *
  * @author Nedzelsky Alexander <to.naive@gmail.com>
- * @version 0.3
+ * @version 0.4
  *
  * @todo chains of requests
  * @todo stop on error_limit exceed
