@@ -4,9 +4,11 @@
 ini_set('max_execution_time',0);
 ini_set('memory_limit', '128M');
 
+define('AC_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . '..');
+
 # Including classes
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
+require_once( AC_DIR  . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
+require_once( AC_DIR  . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
 
 # Initializing AngryCurl instance with callback function named 'callback_function'
 $AC = new AngryCurl('callback_function');
@@ -14,7 +16,7 @@ $AC = new AngryCurl('callback_function');
 # Initializing so called 'web-console mode' with direct cosnole-like output
 $AC->init_console();
 
-$AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
+$AC->load_useragent_list( AC_DIR . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
 
 ?>
 

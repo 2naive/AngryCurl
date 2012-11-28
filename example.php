@@ -4,9 +4,11 @@
 ini_set('max_execution_time',0);
 ini_set('memory_limit', '128M');
 
+define('AC_DIR', dirname(__FILE__));
+
 # Including classes
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
+require_once( AC_DIR . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
+require_once( AC_DIR . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
 
 # Initializing AngryCurl instance with callback function named 'callback_function'
 $AC = new AngryCurl('callback_function');
@@ -17,7 +19,7 @@ $AC->init_console();
 # Importing proxy and useragent lists, setting regexp, proxy type and target url for proxy check
 # You may import proxy from an array as simple as $AC->load_proxy_list($proxy array);
 $AC->load_proxy_list(
-    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
+    AC_DIR . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
     # optional: number of threads
     200,
     # optional: proxy type
@@ -27,7 +29,7 @@ $AC->load_proxy_list(
     # optional: target regexp to check
     'title>G[o]{2}gle'
 );
-$AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
+$AC->load_useragent_list( AC_DIR . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
 
 # Basic request usage (for extended - see demo folder)
 $AC->get('http://ya.ru');

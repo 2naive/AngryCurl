@@ -4,9 +4,11 @@
 ini_set('max_execution_time',0);
 ini_set('memory_limit', '128M');
 
+define('AC_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . '..');
+
 # Including classes
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
-require_once( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
+require_once( AC_DIR  . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'RollingCurl.class.php');
+require_once( AC_DIR  . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'AngryCurl.class.php');
 
 # Extending with proxy export method
 class ProxyChecker extends AngryCurl {
@@ -21,7 +23,7 @@ class ProxyChecker extends AngryCurl {
 $AC = new ProxyChecker();
 $AC->__set('window_size', 200);
 $AC->load_proxy_list(
-    dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
+    AC_DIR . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
     200,
     'http',
     'http://google.com',
