@@ -56,6 +56,8 @@ class AngryCurl extends RollingCurl {
     /**
      * AngryCurl constructor
      *
+     * @throws AngryCurlException
+     * 
      * @param string $callback Callback function name
      * @param bool $debug_log Enable/disable writing log to $debug_info var (false by default to reduce memory consumption)
      * 
@@ -107,6 +109,8 @@ class AngryCurl extends RollingCurl {
      * Request execution overload
      *
      * @access public
+     *
+     * @throws AngryCurlException
      * 
      * @param string $url Request URL
      * @param enum(GET/POST) $method
@@ -130,7 +134,7 @@ class AngryCurl extends RollingCurl {
         
         if($this->n_useragent > 0 && $this->use_useragent_list)
         {
-            $options[CURLOPT_USERAGENT]=$this->array_useragent[ rand(0, $this->n_useragent-1) ];
+            $options[CURLOPT_USERAGENT]=$this->array_useragent[ mt_rand(0, $this->n_useragent-1) ];
         //    self::add_debug_msg("Using USERAGENT: ".$options[CURLOPT_USERAGENT]);
         }
         elseif($this->n_useragent < 1 && $this->use_useragent_list)
@@ -146,6 +150,8 @@ class AngryCurl extends RollingCurl {
      * Starting connections function execution overload
      *
      * @access public
+     *
+     * @throws AngryCurlException
      *
      * @param int $window_size Max number of simultaneous connections
      *
@@ -169,6 +175,7 @@ class AngryCurl extends RollingCurl {
         
         # writing debug
         self::add_debug_msg(" * Starting connections");
+        //var_dump($this->__get('requests'));
         
         $time_start = microtime(1);
         $result = parent::execute($window_size);
@@ -186,13 +193,10 @@ class AngryCurl extends RollingCurl {
      * @access public
      * 
      * @param string/array $input Input proxy data, could be an array or filename
-     * @return bool
+     * @return integer Amount of useragents loaded
      */
     public function load_useragent_list($input)
     {
-        # Setting flag to prevent using AngryCurl without useragents
-        $this->use_useragent_list = true;
-        
         # writing debug
         self::add_debug_msg("# Start loading useragent list");
         
@@ -216,8 +220,13 @@ class AngryCurl extends RollingCurl {
         }
         else
         {
-            self::add_debug_msg("# (!) No useragents loaded");
+            throw new AngryCurlException("# (!) No useragents loaded");
         }
+        
+        # Setting flag to prevent using AngryCurl without useragents
+        $this->use_useragent_list = true;
+        
+        return $this->n_useragent;
     }
 
     /**
@@ -237,9 +246,6 @@ class AngryCurl extends RollingCurl {
      */
     public function load_proxy_list($input, $window_size = 5, $proxy_type = 'http', $proxy_test_url = 'http://google.com', $proxy_valid_regexp = null)
     {
-        # Setting flag to prevent using AngryCurl without proxies
-        $this->use_proxy_list = true;
-        
         # writing debug
         self::add_debug_msg("# Start loading proxies");
         
@@ -306,10 +312,11 @@ class AngryCurl extends RollingCurl {
         }
         else
         {
-            self::add_debug_msg("# Testing proxies aborted");
-            return;
+            throw new AngryCurlException(" (!) Proxies amount < 0 in load_proxy_list():\t{$this->n_proxy}");
         }
         
+        # Setting flag to prevent using AngryCurl without proxies
+        $this->use_proxy_list = true;   
     }
     
     /**
@@ -363,7 +370,9 @@ class AngryCurl extends RollingCurl {
         # adding requests to stack
         foreach($this->array_proxy as $id => $proxy)
         {
-            $this->request($this->proxy_test_url, $method = "GET", null, null, array(CURLOPT_PROXY => $proxy) );
+            # there won't be any regexp checks, just this :)
+            if( strlen($proxy) > 4)
+                $this->request($this->proxy_test_url, $method = "GET", null, null, array(CURLOPT_PROXY => $proxy) );
         }
 
         # run
