@@ -29,7 +29,8 @@ $AC->load_proxy_list(
 );
 $AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
 
-/*
+/* WARNING: IF USING AngryCurlRequest - no "on the fly" proxy server changing will apply
+ *
  * You may use AngryCurlRequest(URL, METHOD, POST_DATA, HEADERS, CURL OPTIONS) to create add new requests
  * METHOD may be get or post
  * POST_DATA an array of POST parameters
@@ -42,14 +43,16 @@ $request = new AngryCurlRequest('http://ya.ru');
 $request->options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
 $AC->add($request);
 
-/*
+/* NOTE: IF USING get() - "on the fly" proxy server changing WILL apply
+ * 
  * You may use shorcut get(URL, HEADERS, CURL OPTIONS) to create add new GET requests
  * HEADERS may be any HTTP headers
  * CURL OPTIONS may be any of supported by CURL
  */
 $AC->get('http://ya.ru');
 
-/*
+/* NOTE: IF USING get() - "on the fly" proxy server changing WILL apply
+ *
  * You may use shorcut post(URL, POST_DATA, HEADERS, CURL OPTIONS) to create add new GET requests
  * POST_DATA an array of POST parameters
  * HEADERS may be any HTTP headers
