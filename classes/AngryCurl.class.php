@@ -156,15 +156,23 @@ class AngryCurl extends RollingCurl {
      */
     public function execute($window_size = null)
     {
-        # writing debug
-        if($window_size > 0)
+        # checking $window_size var
+        if($window_size == null)
+        {
+            self::add_debug_msg(" (!) Default threads amount value (5) is used");
+        }
+        elseif($window_size > 0 && is_int($window_size))
         {
             self::add_debug_msg(" * Threads set to:\t$window_size");
         }
         else
         {
-            self::add_debug_msg(" * Default threads amount value (5) is used");
+            $exception_msg = " (!) Wrong threads amount in execute():\t$window_size";
+            self::add_debug_msg($exception_msg);
+            throw new AngryCurlException($exception_msg);
         }
+        
+        # writing debug
         self::add_debug_msg(" * Starting connections");
         
         $time_start = microtime(1);
