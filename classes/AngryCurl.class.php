@@ -7,6 +7,7 @@
  * @version 0.4
  *
  * @todo stop on error_limit exceed
+ * @todo "on the fly" change AngryCurlRequest fix
  * 
  * @uses RollingCurl
  * @uses cURL

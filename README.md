@@ -27,6 +27,7 @@
 * preventing direct connections without any proxy/useragent if such options are set
 * multi-thread connections
 * callback functions
+* working with chains of requests
 * web-console mode
 * logging
 
