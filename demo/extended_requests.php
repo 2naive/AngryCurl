@@ -17,7 +17,7 @@ $AC->init_console();
 # Importing proxy and useragent lists, setting regexp, proxy type and target url for proxy check
 # You may import proxy from an array as simple as $AC->load_proxy_list($proxy array);
 $AC->load_proxy_list(
-    dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
+    dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
     # optional: number of threads
     200,
     # optional: proxy type
@@ -27,7 +27,7 @@ $AC->load_proxy_list(
     # optional: target regexp to check
     'title>G[o]{2}gle'
 );
-$AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
+$AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
 
 /*
  * You may use AngryCurlRequest(URL, METHOD, POST_DATA, HEADERS, CURL OPTIONS) to create add new requests

@@ -6,7 +6,6 @@
  * @author Nedzelsky Alexander <to.naive@gmail.com>
  * @version 0.4
  *
- * @todo chains of requests
  * @todo stop on error_limit exceed
  * 
  * @uses RollingCurl
@@ -185,6 +184,16 @@ class AngryCurl extends RollingCurl {
         self::add_debug_msg(" * Finished in ".round($time_end-$time_start,2)."s");
         
         return $result;
+    }
+    
+    /**
+     * Flushing requests map for re-using purposes
+     *
+     * @return void
+     */
+    public function flush_requests()
+    {
+        $this->__set('requests', array());
     }
     
     /**
