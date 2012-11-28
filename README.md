@@ -5,6 +5,7 @@
 
 ### Depencies:
 
+* PHP 5 >= 5.1.0
 * RollingCurl
 * cURL
  
