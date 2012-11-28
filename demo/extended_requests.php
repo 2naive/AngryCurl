@@ -14,28 +14,29 @@ $AC = new AngryCurl('callback_function');
 # Initializing so called 'web-console mode' with direct cosnole-like output
 $AC->init_console();
 
+# Setting amount of threads
+$AC->__set('window_size', 200);
+
 # Importing proxy and useragent lists, setting regexp, proxy type and target url for proxy check
-# You may import proxy from an array as simple as $AC->load_proxy_list($proxy array);
 $AC->load_proxy_list(
     dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'proxy_list.txt',
-    # optional: number of threads
-    200,
-    # optional: proxy type
     'http',
-    # optional: target url to check
     'http://google.com',
-    # optional: target regexp to check
     'title>G[o]{2}gle'
 );
 $AC->load_useragent_list( dirname(__DIR__) . DIRECTORY_SEPARATOR . 'import' . DIRECTORY_SEPARATOR . 'useragent_list.txt');
+
+# Setting flags
+$AC->__set('use_proxy_list', true);
+$AC->__set('use_useragent_list', true);
 
 # Basic request usage (for extended - see demo folder)
 $AC->get('http://ya.ru');
 $AC->get('http://ya.ru');
 $AC->get('http://ya.ru');
 
-# Starting with number of threads = 200
-$AC->execute(200);
+# Starting
+$AC->execute();
 
 # You may pring debug information, if console_mode is NOT on ( $AC->init_console(); )
 //AngryCurl::print_debug(); 
