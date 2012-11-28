@@ -493,4 +493,12 @@ class AngryCurlException extends Exception
     }
 }
 
+/**
+ * Class that represent a single curl request
+ */
+class AngryCurlRequest extends RollingCurlRequest
+{
+    
+}
+
 ?>
