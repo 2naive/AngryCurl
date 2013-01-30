@@ -80,7 +80,12 @@ while(/* */)
     $url = /**/;
     // adding URL to queue
     $AC->get($url);
-    // you may also use $AC->post($url); shortcut as well
+    
+    // you may also use 
+    // $AC->post($url, $post_data = null, $headers = null, $options = null);
+    // $AC->get($url, $headers = null, $options = null);
+    // $AC->request($url, $method = "GET", $post_data = null, $headers = null, $options = null);
+    // as well
 }
 
 // setting amount of threads and starting connections
@@ -100,10 +105,12 @@ You may also pass cURL options for each url before adding to queue like here:
 $headers = array('Content-type: text/plain', 'Content-length: 100');
 // Define cURL options (will be passed through curl_setopt_array) if needed, or just set to NULL
 $options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
+// Define post-data array to send in case of POST method, or just set to NULL
+$post_data = array('param' => 'value');
+
+// Add request
 $AC->get($url, $headers, $options);
 // or
-// define POST data array to send in case of POST, or just set to NULL
-$post_data = array('param' => 'value');
 $AC->post($url, $post_data, $headers, $options) ;
 // or
 $AC->request($url, $method = "GET", $post_data, $headers, $options);
@@ -113,6 +120,7 @@ $AC->request($url, $method = "GET", $post_data, $headers, $options);
 // as alternative to written above.
 
 $request = new AngryCurlRequest($url);
+// $url, $method, $post_data, $headers, $options - public properties of AngryCurlRequest
 $request->options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
 $AC->add($request);
 ```
