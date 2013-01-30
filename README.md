@@ -96,6 +96,22 @@ unset($AC);
 
 You may also pass cURL options for each url before adding to queue like here:
 ```php
+// Define HTTP headers (CURLOPT_HTTPHEADER) if needed, or just set to NULL
+$headers = array('Content-type: text/plain', 'Content-length: 100');
+// Define cURL options (will be passed through curl_setopt_array) if needed, or just set to NULL
+$options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
+$AC->get($url, $headers, $options);
+// or
+// define POST data array to send in case of POST, or just set to NULL
+$post_data = array('param' => 'value');
+$AC->post($url, $post_data, $headers, $options) ;
+// or
+$AC->request($url, $method = "GET", $post_data, $headers, $options);
+
+// ATTENTION: temporary "on-the-fly" proxy/useragents lists are not
+// working with AngryCurlRequest. Keep it in mind if you will use code below
+// as alternative to written above.
+
 $request = new AngryCurlRequest($url);
 $request->options = array(CURLOPT_HEADER => true, CURLOPT_NOBODY => true);
 $AC->add($request);
