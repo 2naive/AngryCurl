@@ -49,7 +49,7 @@ $AC->request('http://ya.ru');
  */
 $AC->get('http://ya.ru');
 
-/* NOTE: IF USING get() - "on the fly" proxy server changing WILL apply
+/* NOTE: IF USING post() - "on the fly" proxy server changing WILL apply
  *
  * You may use shorcut post(URL, POST_DATA, HEADERS, CURL OPTIONS) to create add new GET requests
  *  POST_DATA     may be an array of POST-params
