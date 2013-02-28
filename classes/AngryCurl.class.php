@@ -3,7 +3,9 @@
 /**
  * AngryCurl - Anonymized Rolling Curl class
  *
- * @author Nedzelsky Alexander <to.naive@gmail.com>
+ * @author  Nedzelsky Alexander <to.naive@gmail.com>
+ * @link    http://stupid.su/php-curl_multi/
+ * @licence GPL
  * @version 0.4
  *
  * @todo stop on error_limit exceed
