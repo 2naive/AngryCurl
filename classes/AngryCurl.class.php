@@ -54,6 +54,9 @@ class AngryCurl extends RollingCurl {
     
     private $use_proxy_list       =   false;
     private $use_useragent_list   =   false;
+	
+	protected $used_proxies = array();
+	protected $callback_proxy_check = NULL;
     
     /**
      * AngryCurl constructor
@@ -126,7 +129,20 @@ class AngryCurl extends RollingCurl {
     {
         if($this->n_proxy > 0 && $this->use_proxy_list)
         {
-            $options[CURLOPT_PROXY]=$this->array_proxy[ mt_rand(0, $this->n_proxy-1) ];
+			//use different proxy for every url on same domain
+			foreach($this->array_proxy as $proxy_key=>$proxy_val){
+				$host = parse_url($request->url,PHP_URL_HOST);
+				if(!isset($this->used_proxies[$proxy_val."@".$host])){
+					$options[CURLOPT_PROXY] = $proxy_val;
+					$this->used_proxies[$proxy_val."@".$host] = 1;
+					break;
+				}
+			}
+			//proxy not set, return false (ran out of proxies!)
+			if(empty($options[CURLOPT_PROXY])){
+				return false;
+			}
+            //$options[CURLOPT_PROXY]=$this->array_proxy[ mt_rand(0, $this->n_proxy-1) ];
         //    self::add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
         }
         elseif($this->n_proxy < 1 && $this->use_proxy_list)
@@ -147,6 +163,60 @@ class AngryCurl extends RollingCurl {
         parent::request($url, $method, $post_data, $headers, $options);
         return true;
     }
+	
+	/**
+     * Add a request to the request queue
+	 * added support to "on-the-fly" proxies and user-agents for $AC->add($request);
+	 * just call $AC->add($request,true);
+     *
+     * @param Request $request
+	 * @param $use_proxy
+     * @return bool
+     */
+    public function add($request, $use_proxy=false) {
+		
+		if($use_proxy && !isset($request->options[CURLOPT_PROXY])){
+			$options = $request->options;
+			if($this->n_proxy > 0 && $this->use_proxy_list)
+			{
+				//use different proxy for every url on same domain
+				foreach($this->array_proxy as $proxy_key=>$proxy_val){
+					$host = parse_url($request->url,PHP_URL_HOST);
+					if(!isset($this->used_proxies[$proxy_val."@".$host])){
+						$options[CURLOPT_PROXY] = $proxy_val;
+						$this->used_proxies[$proxy_val."@".$host] = 1;
+						break;
+					}
+				}
+				//proxy not set, return false (ran out of proxies!)
+				if(empty($options[CURLOPT_PROXY])){
+					return false;
+				}
+				//$options[CURLOPT_PROXY]=$this->array_proxy[ mt_rand(0, $this->n_proxy-1) ];
+			//    self::add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
+			}
+			elseif($this->n_proxy < 1 && $this->use_proxy_list)
+			{
+				throw new AngryCurlException("(!) Option 'use_proxy_list' is set, but no alive proxy available");
+			}
+			
+			if($this->n_useragent > 0 && $this->use_useragent_list)
+			{
+				$options[CURLOPT_USERAGENT]=$this->array_useragent[ mt_rand(0, $this->n_useragent-1) ];
+			//    self::add_debug_msg("Using USERAGENT: ".$options[CURLOPT_USERAGENT]);
+			}
+			elseif($this->n_useragent < 1 && $this->use_useragent_list)
+			{
+				throw new AngryCurlException("(!) Option 'use_useragent_list' is set, but no useragents available");
+			}
+			$request->options = $options;
+		}
+		return parent::add($request);
+    }
+	
+	public function setProxyCheckCallback($callback){
+		$this->callback_proxy_check = $callback;
+	}
     
     /**
      * Starting connections function execution overload
@@ -344,16 +414,17 @@ class AngryCurl extends RollingCurl {
         if($info['http_code']!==200)
         {
             self::add_debug_msg("   $rid->\t".$request->options[CURLOPT_PROXY]."\tFAILED\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
-            return;
+            return false;
         }
 
         if(!empty(self::$proxy_valid_regexp) && !@preg_match('#'.self::$proxy_valid_regexp.'#', $response) )
         {
             self::add_debug_msg("   $rid->\t".$request->options[CURLOPT_PROXY]."\tFAILED\tRegExp match:\t".self::$proxy_valid_regexp."\t".$info['url']);
-            return;
+            return false;
         }
             self::add_debug_msg("   $rid->\t".$request->options[CURLOPT_PROXY]."\tOK\t".$info['http_code']."\t".$info['total_time']."\t".$info['url']);
             self::$array_alive_proxy[] = $request->options[CURLOPT_PROXY];
+		return true;
     }
     
     /**
@@ -377,7 +448,14 @@ class AngryCurl extends RollingCurl {
         }
         
         $buff_callback_func = $this->__get('callback');
-        $this->__set('callback',array('AngryCurl', 'callback_proxy_check'));
+		
+		//added customizable callback for proxy check
+		if(!isset($this->callback_proxy_check)){
+			$this->__set('callback',array('AngryCurl', 'callback_proxy_check'));
+		}else{
+			$this->__set('callback',$this->callback_proxy_check);
+		}
+        
 
         # adding requests to stack
         foreach($this->array_proxy as $id => $proxy)
@@ -512,5 +590,3 @@ class AngryCurlRequest extends RollingCurlRequest
 {
     
 }
-
-?>
