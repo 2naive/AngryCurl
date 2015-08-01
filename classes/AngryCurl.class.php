@@ -126,7 +126,7 @@ class AngryCurl extends RollingCurl {
     {
         if($this->n_proxy > 0 && $this->use_proxy_list)
         {
-            $options[CURLOPT_PROXY]=$this->array_proxy[ mt_rand(0, $this->n_proxy-1) ];
+            $options[CURLOPT_PROXY]=empty($options[CURLOPT_PROXY]) ? $this->array_proxy[ mt_rand(0, $this->n_proxy-1) ] : $options[CURLOPT_PROXY];
         //    self::add_debug_msg("Using PROXY({$this->n_proxy}): ".$options[CURLOPT_PROXY]);
         }
         elseif($this->n_proxy < 1 && $this->use_proxy_list)
